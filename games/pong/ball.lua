@@ -3,8 +3,9 @@ Ball = {}
 function Ball:load()
   self.x = love.graphics.getWidth() / 2
   self.y = love.graphics.getHeight() / 2
-  self.width = 20
-  self.height = 20
+  self.img = love.graphics.newImage('assets/sm-blue-ball.png')
+  self.width = self.img:getWidth()
+  self.height = self.img:getHeight()
   self.speed = 200
   self.xVel = -self.speed
   self.yVel = 0
@@ -16,43 +17,10 @@ function Ball:update(dt)
 end
 
 function Ball:collide()
-  if checkCollision(self, Player) then
-    self.xVel = self.speed
-    local middleBall = self.y + self.height / 2
-    local middlePlayer = Player.y + Player.height / 2
-    local collisionPosition = middleBall - middlePlayer
-    self.yVel = collisionPosition * 5
-  end
-
-  if checkCollision(self, AI) then
-    self.xVel = -self.speed
-    local middleBall = self.y + self.height / 2
-    local middleAI = AI.y + AI.height / 2
-    local collisionPosition = middleBall - middleAI
-    self.yVel = collisionPosition * 5
-  end
-
-  if self.y < 0 then
-    self.y = 0
-    self.yVel = -self.yVel
-   elseif self.y + self.height > love.graphics.getHeight() then
-      self.y = love.graphics.getHeight() - self.height
-      self.yVel = -self.yVel
-  end
-
-  if self.x < 0 then
-    self.x = love.graphics.getWidth() / 2 - self.width / 2
-    self.x = love.graphics.getHeight() / 2 - self.height / 2
-    self.yVel = 0
-    self.xVel = self.speed
-  end
-
-  if self.x + self.width > love.graphics.getWidth() then
-    self.x = love.graphics.getWidth() / 2 - self.width / 2
-    self.x = love.graphics.getHeight() / 2 - self.height / 2
-    self.yVel = 0
-    self.xVel = -self.speed
-  end
+  self:collidePlayer()
+  self:collideAi()
+  self:score()
+  self:collideWall()
 end
 
 function Ball:move(dt)
@@ -60,6 +28,53 @@ function Ball:move(dt)
   self.y = self.y + self.yVel * dt
 end
 
+function Ball:collideWall()
+  if self.y < 0 then
+    self.y = 0
+    self.yVel = -self.yVel
+   elseif self.y + self.height > love.graphics.getHeight() then
+      self.y = love.graphics.getHeight() - self.height
+      self.yVel = -self.yVel
+  end
+end
+
+function Ball:collidePlayer()
+  if checkCollision(self, Player) then
+    self.xVel = self.speed
+    local middleBall = self.y + self.height / 2
+    local middlePlayer = Player.y + Player.height / 2
+    local collisionPosition = middleBall - middlePlayer
+    self.yVel = collisionPosition * 5
+  end
+end
+
+function Ball:collideAi()
+  if checkCollision(self, AI) then
+    self.xVel = -self.speed
+    local middleBall = self.y + self.height / 2
+    local middleAI = AI.y + AI.height / 2
+    local collisionPosition = middleBall - middleAI
+    self.yVel = collisionPosition * 5
+  end
+end
+
+function Ball:score()
+  if self.x < 0 then
+    self:resetPosition(1)
+  end
+
+  if self.x + self.width > love.graphics.getWidth() then
+    self:resetPosition(-1)
+  end
+end
+
+function Ball:resetPosition(modifier)
+    self.x = love.graphics.getWidth() / 2 - self.width / 2
+    self.x = love.graphics.getHeight() / 2 - self.height / 2
+    self.yVel = 0
+    self.xVel = self.speed * modifier
+end
+
 function Ball:draw()
- love.graphics.rectangle("fill", self.x, self.y, self.width, self.height) 
+  love.graphics.draw(self.img, self.x, self.y)
 end
