@@ -1,20 +1,24 @@
 require("player")
 require("ball")
 require("ai")
+require("background")
 
 function love.load()
+  Background:load()
   Player:load()
   Ball:load()
   AI:load()
 end
 
 function love.update(dt)
+  Background:update(dt)
   Player:update(dt)
   Ball:update(dt)
   AI:update(dt)
 end
 
 function love.draw()
+  Background:draw()
   Player:draw()
   Ball:draw()
   AI:draw()
