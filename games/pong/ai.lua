@@ -23,7 +23,7 @@ function AI:update(dt)
 end
 
 function AI:move(dt)
- self.y = self.y + self.yVel * dt 
+ self.y = self.y + self.yVel * dt * 0.25
 end
 
 function AI:acquireTarget( )
